@@ -1,4 +1,5 @@
 from turtle import Turtle
+import time
 
 # Pixels to draw the space invader
 PIXELS = [{"x": 3, "y": 0},
@@ -59,7 +60,11 @@ PIXELS = [{"x": 3, "y": 0},
 
 class Alien:
     def __init__(self, start_position):
+        self.center = {"x": start_position["x"] + 5 * 5,
+                       "y": start_position["y"] - 5 * 4}
+        self.direction = 1
         self.dots = []
+        self.step = 20
         for coordinate in PIXELS:
             dot = Turtle()
             dot.shape("square")
@@ -71,20 +76,29 @@ class Alien:
             dot.goto((x, y))
             self.dots.append(dot)
 
-    def move_right(self):
+    def move(self):
+        self.center["x"] += self.step * self.direction
         for dot in self.dots:
-            step = 5
-            x = dot.xcor() + step
+            x = dot.xcor() + self.step * self.direction
+            dot.goto((x, dot.ycor()))
+
+    def bounce(self):
+        self.direction *= -1
+
+    def descend(self):
+        self.center["y"] -= self.step
+        for dot in self.dots:
+            y = dot.ycor() - self.step
+            dot.goto((dot.xcor(), y))
+
+    def move_right(self):
+        self.center["x"] += self.step
+        for dot in self.dots:
+            x = dot.xcor() + self.step
             dot.goto((x, dot.ycor()))
 
     def move_left(self):
+        self.center["x"] -= self.step
         for dot in self.dots:
-            step = 5
-            x = dot.xcor() - step
+            x = dot.xcor() - self.step
             dot.goto((x, dot.ycor()))
-
-    def move_down(self):
-        for dot in self.dots:
-            step = 5
-            y = dot.ycor() - step
-            dot.goto((dot.xcor(), y))
