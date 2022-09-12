@@ -1,4 +1,5 @@
 from turtle import Turtle
+from ship_laser import ShipLaser
 
 PIXELS = [{"x": 6, "y": 0},
 
@@ -85,7 +86,7 @@ class Ship:
         self.center = {"x": start_position["x"] + 5 * 5,
                        "y": start_position["y"] - 5 * 4}
         self.dots = []
-        self.step = 5
+        self.step = 8
         for coordinate in PIXELS:
             dot = Turtle()
             dot.shape("square")
@@ -96,6 +97,8 @@ class Ship:
             y = start_position["y"] - coordinate["y"] * 5
             dot.goto((x, y))
             self.dots.append(dot)
+
+        self.lasers = []
 
     def move_right(self):
         self.center["x"] += self.step
@@ -108,3 +111,8 @@ class Ship:
         for dot in self.dots:
             x = dot.xcor() - self.step
             dot.goto((x, dot.ycor()))
+
+    def shoot(self):
+        if len(self.lasers) < 5:
+            laser = ShipLaser(self.center)
+            self.lasers.append(laser)

@@ -1,4 +1,5 @@
 from turtle import Turtle
+from alien_laser import AlienLaser
 import time
 
 # Pixels to draw the space invader
@@ -64,6 +65,7 @@ class Alien:
                        "y": start_position["y"] - 5 * 4}
         self.direction = 1
         self.dots = []
+        self.lasers = []
         self.step = 20
         for coordinate in PIXELS:
             dot = Turtle()
@@ -85,10 +87,11 @@ class Alien:
     def bounce(self):
         self.direction *= -1
 
+
     def descend(self):
-        self.center["y"] -= self.step
+        self.center["y"] -= 10
         for dot in self.dots:
-            y = dot.ycor() - self.step
+            y = dot.ycor() - 10
             dot.goto((dot.xcor(), y))
 
     def move_right(self):
@@ -102,3 +105,7 @@ class Alien:
         for dot in self.dots:
             x = dot.xcor() - self.step
             dot.goto((x, dot.ycor()))
+
+    def shoot(self):
+        laser = AlienLaser(self.center)
+        self.lasers.append(laser)

@@ -1,6 +1,11 @@
 import turtle
 import time
 from alien import Alien
+from ship import Ship
+from alien_laser import AlienLaser
+
+from random import randint
+
 
 screen = turtle.Screen()
 screen.setup(width=900, height=900)
@@ -9,7 +14,7 @@ screen.title("Space Invaders")
 screen.tracer(0)
 
 
-# putting the aliens on the
+# putting the aliens on the screen
 aliens = []
 start_positions = []
 
@@ -25,8 +30,13 @@ for i in range(8):
                           }
         aliens.append(Alien(start_position))
 
-left_wall_xcor = -430
+alien_lasers = []
+
+left_wall_xcor = -410
 right_wall_xcor = 400
+
+ship = Ship()
+
 
 screen.update()
 
@@ -34,26 +44,65 @@ screen.update()
 game_is_on = True
 direction = "right"
 previous_direction = direction
+count = 0
+count_max = 5
+directions = ["right" for i in range(2*count_max)]
+
+screen.listen()
+screen.onkeypress(fun=ship.move_left, key="Left")
+screen.onkeypress(fun=ship.move_right, key="Right")
+screen.onkeypress(fun=ship.move_right, key="Right")
+screen.onkeypress(fun=ship.shoot, key="space")
 
 while game_is_on:
+    time.sleep(0.01)
+
+    # Checks if the aliens have hit a wall, and decides what the next alien direction should be
     for alien in aliens:
         if alien.center["x"] >= right_wall_xcor:
             direction = "left"
         elif alien.center["x"] <= left_wall_xcor:
             direction = "right"
-    if previous_direction != direction:
+
+        # alien shoots:
+        if randint(0, 2000) == 1:
+            alien.shoot()
+        for laser in alien.lasers:
+            laser.move()
+
+    # Decides when the aliens descend
+    directions.append(direction)
+    directions.pop(0)
+
+    # if previous_direction != direction:
+    if "left" in directions and "right" in directions:
+        time.sleep(0.5)
         for alien in aliens:
             alien.descend()
-        screen.update()
-        time.sleep(0.1)
+        directions = [direction for i in range(2*count_max)]
+        count = 0
+
+
+    # Moves the aliens
+
     if direction == "right":
-        for alien in aliens:
-            alien.move_right()
+        count += 1
+        if count > count_max:
+            count = 0
+            for alien in aliens:
+                alien.move_right()
     else:
-        for alien in aliens:
-            alien.move_left()
+        count += 1
+        if count > count_max:
+            count = 0
+            for alien in aliens:
+                alien.move_left()
+
+    for laser in ship.lasers:
+        laser.move()
+
     screen.update()
-    time.sleep(0.1)
+    # Remembers what direction it was going so it can compare it in the next loop
     previous_direction = direction
 
 
