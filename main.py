@@ -2,7 +2,7 @@ import turtle
 import time
 from alien import Alien
 from ship import Ship
-from alien_laser import AlienLaser
+from shield import Shield
 
 from random import randint
 
@@ -16,21 +16,28 @@ screen.tracer(0)
 
 # putting the aliens on the screen
 aliens = []
+shields = []
 start_positions = []
 
 top_left_xcor = -400
 top_left_ycor = 300
+bottom_left_xcor = -350
+bottom_left_ycor = -200
 
 for i in range(8):
     x = top_left_xcor + 80*i
-    for j in range(6):
+    for j in range(5):
         y = top_left_ycor - 55*j
         start_position = {"x": x,
                           "y": y,
                           }
         aliens.append(Alien(start_position))
 
-alien_lasers = []
+for i in range(4):
+    x = bottom_left_xcor + 200*i
+    start_position = {"x": x,
+                      "y": bottom_left_ycor}
+    shields.append(Shield(start_position))
 
 left_wall_xcor = -410
 right_wall_xcor = 400
@@ -55,7 +62,7 @@ screen.onkeypress(fun=ship.move_right, key="Right")
 screen.onkeypress(fun=ship.shoot, key="space")
 
 while game_is_on:
-    time.sleep(0.01)
+    time.sleep(0.001)
 
     # Checks if the aliens have hit a wall, and decides what the next alien direction should be
     for alien in aliens:
