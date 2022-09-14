@@ -67,6 +67,9 @@ class Alien:
         self.dots = []
         self.lasers = []
         self.step = 20
+        self.status = "alive"
+        self.delay = 1
+        self.last_move = 0
         for coordinate in PIXELS:
             dot = Turtle()
             dot.shape("square")
@@ -79,33 +82,55 @@ class Alien:
             self.dots.append(dot)
 
     def move(self):
-        self.center["x"] += self.step * self.direction
-        for dot in self.dots:
-            x = dot.xcor() + self.step * self.direction
-            dot.goto((x, dot.ycor()))
+        if self.status == "alive":
+            t = time.time()
+            if t - self.last_move > self.delay:
+                self.last_move = t
+                self.center["x"] += self.step * self.direction
+                for dot in self.dots:
+                    x = dot.xcor() + self.step * self.direction
+                    dot.goto((x, dot.ycor()))
 
     def bounce(self):
         self.direction *= -1
 
-
     def descend(self):
-        self.center["y"] -= 10
-        for dot in self.dots:
-            y = dot.ycor() - 10
-            dot.goto((dot.xcor(), y))
+        if self.status == "alive":
+            t = time.time()
+            if t - self.last_move > self.delay:
+                self.last_move = t
+                self.center["y"] -= 10
+                for dot in self.dots:
+                    y = dot.ycor() - 10
+                    dot.goto((dot.xcor(), y))
 
     def move_right(self):
-        self.center["x"] += self.step
-        for dot in self.dots:
-            x = dot.xcor() + self.step
-            dot.goto((x, dot.ycor()))
+        if self.status == "alive":
+            t = time.time()
+            if t - self.last_move > self.delay:
+                self.last_move = t
+                self.center["x"] += self.step
+                for dot in self.dots:
+                    x = dot.xcor() + self.step
+                    dot.goto((x, dot.ycor()))
 
     def move_left(self):
-        self.center["x"] -= self.step
-        for dot in self.dots:
-            x = dot.xcor() - self.step
-            dot.goto((x, dot.ycor()))
+        if self.status == "alive":
+            t = time.time()
+            if t - self.last_move > self.delay:
+                self.last_move = t
+                self.center["x"] -= self.step
+                for dot in self.dots:
+                    x = dot.xcor() - self.step
+                    dot.goto((x, dot.ycor()))
 
     def shoot(self):
-        laser = AlienLaser(self.center)
-        self.lasers.append(laser)
+        if self.status == "alive":
+            laser = AlienLaser(self.center)
+            self.lasers.append(laser)
+
+    def kill(self):
+        self.status = "dead"
+        for dot in self.dots:
+            dot.goto((0, -900))
+            dot.hideturtle()

@@ -28,3 +28,6 @@ class Shield:
             dot.goto((x, y))
             self.dots.append(dot)
 
+    def remove(self, dot):
+        dot.goto((0, -900))
+        dot.hideturtle()

@@ -1,5 +1,9 @@
 from turtle import Turtle
 from ship_laser import ShipLaser
+import time
+
+FIRE_DELAY = 3 # number of seconds between bullets
+LAST_FIRE = 0
 
 PIXELS = [{"x": 6, "y": 0},
 
@@ -87,6 +91,9 @@ class Ship:
                        "y": start_position["y"] - 5 * 4}
         self.dots = []
         self.step = 8
+        self.status = "alive"
+        self.fire_delay = FIRE_DELAY
+        self.last_fire = LAST_FIRE
         for coordinate in PIXELS:
             dot = Turtle()
             dot.shape("square")
@@ -101,18 +108,29 @@ class Ship:
         self.lasers = []
 
     def move_right(self):
-        self.center["x"] += self.step
-        for dot in self.dots:
-            x = dot.xcor() + self.step
-            dot.goto((x, dot.ycor()))
+        if self.status == "alive":
+            self.center["x"] += self.step
+            for dot in self.dots:
+                x = dot.xcor() + self.step
+                dot.goto((x, dot.ycor()))
 
     def move_left(self):
-        self.center["x"] -= self.step
-        for dot in self.dots:
-            x = dot.xcor() - self.step
-            dot.goto((x, dot.ycor()))
+        if self.status == "alive":
+            self.center["x"] -= self.step
+            for dot in self.dots:
+                x = dot.xcor() - self.step
+                dot.goto((x, dot.ycor()))
 
     def shoot(self):
-        if len(self.lasers) < 5:
-            laser = ShipLaser(self.center)
-            self.lasers.append(laser)
+        if self.status == "alive":
+            t = time.time()
+            if t - self.last_fire > self.fire_delay:
+                self.last_fire = t
+                laser = ShipLaser(self.center)
+                self.lasers.append(laser)
+
+    def die(self):
+        self.status == "dead"
+        for dot in self.dots:
+            dot.goto((0, -900))
+            dot.hideturtle()

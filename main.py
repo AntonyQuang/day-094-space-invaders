@@ -72,7 +72,7 @@ while game_is_on:
             direction = "right"
 
         # alien shoots:
-        if randint(0, 2000) == 1:
+        if randint(0, 1500) == 1:
             alien.shoot()
         for laser in alien.lasers:
             laser.move()
@@ -93,25 +93,56 @@ while game_is_on:
     # Moves the aliens
 
     if direction == "right":
-        count += 1
-        if count > count_max:
-            count = 0
+        # count += 1
+        # if count > count_max:
+        #     count = 0
             for alien in aliens:
                 alien.move_right()
     else:
-        count += 1
-        if count > count_max:
-            count = 0
+        # count += 1
+        # if count > count_max:
+        #     count = 0
             for alien in aliens:
                 alien.move_left()
+
+    # shield collision detection
+
+    for shield in shields:
+        for shield_dot in shield.dots:
+            for laser in ship.lasers:
+                for laser_dot in laser.dots:
+                    if shield_dot.distance(laser_dot) < 15:
+                        laser.remove()
+                        shield.remove(shield_dot)
+            for alien in aliens:
+                for laser in alien.lasers:
+                    for laser_dot in laser.dots:
+                        if shield_dot.distance(laser_dot) < 15:
+                            laser.remove()
+                            shield.remove(shield_dot)
+
+    # alien ship detection
+    for alien in aliens:
+        for alien_dot in alien.dots:
+            for laser in ship.lasers:
+                for laser_dot in laser.dots:
+                    if laser_dot.distance(alien_dot) < 10:
+                        laser.remove()
+                        alien.kill()
+
+    # player ship detection
+        for laser in alien.lasers:
+            for laser_dot in laser.dots:
+                for ship_dot in ship.dots:
+                    if laser_dot.distance(ship_dot) < 10:
+                        laser.remove()
+                        ship.die()
 
     for laser in ship.lasers:
         laser.move()
 
     screen.update()
-    # Remembers what direction it was going so it can compare it in the next loop
+    # Remembers what direction it was going, so it can compare it in the next loop
     previous_direction = direction
-
-
 
 screen.exitonclick()
